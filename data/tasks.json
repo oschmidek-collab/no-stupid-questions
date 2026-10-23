@@ -5,7 +5,8 @@
   "type": "create",
   "url": "https://www.instagram.com/accounts/emailsignup/",
   "instruction": "לפתוח חשבון אינסטגרם חדש ולהעביר אותו לחשבון יוצר (Creator) בהגדרות",
-  "done": false
+  "done": true,
+  "done_at": "2026-10-23T09:28:21.312Z"
  },
  {
   "id": "s2",
