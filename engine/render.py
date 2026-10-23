@@ -24,6 +24,7 @@ PAGE = "אין שאלות טיפשיות"
 
 def font_faces():
     sets = [("Frank", "frank-ruhl-libre", [700, 900], False), ("Heebo", "heebo", [800], True),
+            ("Pencil", "gveret-levin", [400], False),
             ("Assistant", "assistant", [400, 600, 700], True)]
     faces = []
     for fam, pkg, weights, has_latin in sets:
@@ -88,6 +89,11 @@ svg{direction:ltr;overflow:visible}
 .stamp>div{border:2px solid var(--orange);padding:18px 46px 26px;font:900 140px/1 "Frank";text-align:center}
 .stamp small{display:block;font:500 24px "Plex";letter-spacing:.2em;margin-bottom:10px;direction:ltr}
 .stamp.sm>div{font-size:56px;line-height:1.2;padding:18px 34px 22px}
+/* the pencil layer: unofficial, unverified scribbles in the margin */
+.pencil{align-self:flex-end;max-width:640px;margin-top:34px;transform:rotate(-2.5deg);transform-origin:left top;color:#4E4B45;position:relative;padding-left:4px}
+.pencil .t{font:400 44px/1.25 "Pencil";display:block}
+.pencil .tag{display:inline-block;font:500 18px "Plex";letter-spacing:.14em;color:#4E4B45;border:1.4px solid #4E4B45;padding:2px 9px 1px;margin-bottom:8px;direction:ltr}
+.pencil svg{display:block;width:180px;height:26px;margin-top:4px}
 .s.end .in{justify-content:center;padding-bottom:120px}
 .cta{font:700 66px/1.18 "Frank";text-align:center;margin-top:40px}
 .cta2{font:400 40px/1.4 "Assistant";color:var(--ink2);text-align:center;margin-top:20px}
@@ -138,22 +144,30 @@ def note_block(s):
             f'<p>{rich(s["note"])}</p></div>')
 
 
+def pencil_block(s):
+    if not s.get("pencil"):
+        return ""
+    squiggle = ('<svg viewBox="0 0 180 26"><path d="M2 14 C20 4 34 22 52 12 S86 4 104 14 S140 22 178 9" fill="none" '
+                'stroke="#4E4B45" stroke-width="2" stroke-linecap="round"/></svg>')
+    return f'<div class="pencil"><span class="tag">UNVERIFIED</span><span class="t">{esc(s["pencil"])}</span>{squiggle}</div>'
+
+
 def slide_html(s, i, total, post):
     L = s["layout"]
     fig = f'<div class="fig">FIG. {esc(post["fig"])}.{i}</div>'
     kicker = f'<div class="kick">{esc(s["kicker"])}</div>' if s.get("kicker") else ""
     body = "".join(f"<p>{rich(x)}</p>" for x in s.get("body", []))
     if L == "cover":
-        inner = fig + kicker + f'<h1>{esc(s["title"])}</h1>' + (f'<div class="sub">{rich(s["sub"])}</div>' if s.get("sub") else "")
+        inner = fig + kicker + f'<h1>{esc(s["title"])}</h1>' + (f'<div class="sub">{rich(s["sub"])}</div>' if s.get("sub") else "") + pencil_block(s)
         d = s.get("drawing")
         if d and d.get("type") == "bike":
             inner += bike_figure(d)
     elif L == "stat":
-        inner = fig + kicker + number_block(s) + body + note_block(s)
+        inner = fig + kicker + number_block(s) + body + pencil_block(s) + note_block(s)
     elif L == "text":
-        inner = fig + kicker + f'<h2>{esc(s["heading"])}</h2>' + body + note_block(s)
+        inner = fig + kicker + f'<h2>{esc(s["heading"])}</h2>' + body + pencil_block(s) + note_block(s)
     elif L == "verdict":
-        inner = fig + kicker + f'<div class="stamp"><div><small>VERDICT</small>{esc(s["stamp"])}</div></div>' + body + note_block(s)
+        inner = fig + kicker + f'<div class="stamp"><div><small>VERDICT</small>{esc(s["stamp"])}</div></div>' + body + pencil_block(s) + note_block(s)
     elif L == "end":
         inner = (f'<div class="stamp sm"><div><small>CASE CLOSED</small>נבדק. נחקר.<br>אין שאלות טיפשיות.</div></div>'
                  f'<div class="cta">{esc(s.get("cta", "יש לך שאלה טיפשית? שלח.\nאין כאן כאלה.")).replace(chr(10), "<br>")}</div>'
