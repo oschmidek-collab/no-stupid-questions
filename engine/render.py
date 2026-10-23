@@ -89,11 +89,15 @@ svg{direction:ltr;overflow:visible}
 .stamp>div{border:2px solid var(--orange);padding:18px 46px 26px;font:900 140px/1 "Frank";text-align:center}
 .stamp small{display:block;font:500 24px "Plex";letter-spacing:.2em;margin-bottom:10px;direction:ltr}
 .stamp.sm>div{font-size:56px;line-height:1.2;padding:18px 34px 22px}
-/* the pencil layer: unofficial, unverified scribbles in the margin */
-.pencil{align-self:flex-end;max-width:640px;margin-top:34px;transform:rotate(-2.5deg);transform-origin:left top;color:#4E4B45;position:relative;padding-left:4px}
-.pencil .t{font:400 44px/1.25 "Pencil";display:block}
-.pencil .tag{display:inline-block;font:500 18px "Plex";letter-spacing:.14em;color:#4E4B45;border:1.4px solid #4E4B45;padding:2px 9px 1px;margin-bottom:8px;direction:ltr}
-.pencil svg{display:block;width:180px;height:26px;margin-top:4px}
+/* the pencil layer: unofficial scribbles that float in the empty margins, placed by PLACE_JS */
+.pencil{position:absolute;top:0;left:0;max-width:440px;color:#3D3B37;transform-origin:center;visibility:hidden}
+.pencil .t{font:400 34px/1.32 "Pencil";display:block;filter:url(#graphite)}
+.pencil svg.sq{display:block;width:150px;height:22px;margin-top:2px;filter:url(#graphite)}
+.pencil .st{position:absolute;top:-6px;left:calc(100% + 14px);transform:rotate(-9deg);color:#1F4E8C;border:3px solid currentColor;
+  padding:3px;filter:url(#rubber);opacity:.88;white-space:nowrap}
+.pencil .st>div{border:1.2px solid currentColor;padding:2px 10px 3px;text-align:center;line-height:1.05}
+.pencil .st b{display:block;font:900 24px "Frank"}
+.pencil .st small{display:block;font:500 11px "Plex";letter-spacing:.22em;direction:ltr}
 .s.end .in{justify-content:center;padding-bottom:120px}
 .cta{font:700 66px/1.18 "Frank";text-align:center;margin-top:40px}
 .cta2{font:400 40px/1.4 "Assistant";color:var(--ink2);text-align:center;margin-top:20px}
@@ -147,9 +151,28 @@ def note_block(s):
 def pencil_block(s):
     if not s.get("pencil"):
         return ""
-    squiggle = ('<svg viewBox="0 0 180 26"><path d="M2 14 C20 4 34 22 52 12 S86 4 104 14 S140 22 178 9" fill="none" '
-                'stroke="#4E4B45" stroke-width="2" stroke-linecap="round"/></svg>')
-    return f'<div class="pencil"><span class="tag">UNVERIFIED</span><span class="t">{esc(s["pencil"])}</span>{squiggle}</div>'
+    squiggle = ('<svg class="sq" viewBox="0 0 150 22"><path d="M2 12 C16 4 28 19 44 10 S72 3 88 12 S118 19 148 7" fill="none" '
+                'stroke="#3D3B37" stroke-width="1.8" stroke-linecap="round"/></svg>')
+    stamp = '<span class="st"><div><b>לא נבדק</b><small>UNVERIFIED</small></div></span>'
+    return f'<div class="pencil"><span class="t">{esc(s["pencil"])}</span>{squiggle}{stamp}</div>'
+
+
+# Texture filters: graphite grain + wobble for pencil, blotchy ink for the rubber stamp.
+FILTERS = """<svg width="0" height="0" style="position:absolute"><defs>
+<filter id="graphite" x="-5%" y="-25%" width="110%" height="150%">
+  <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" result="w"/>
+  <feDisplacementMap in="SourceGraphic" in2="w" scale="1.8" xChannelSelector="R" yChannelSelector="G" result="d"/>
+  <feTurbulence type="fractalNoise" baseFrequency="2.2" numOctaves="1" seed="11" result="g"/>
+  <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -1.5 0 0 0 1.42" result="ga"/>
+  <feComposite in="d" in2="ga" operator="in"/>
+</filter>
+<filter id="rubber" x="-10%" y="-10%" width="120%" height="120%">
+  <feTurbulence type="fractalNoise" baseFrequency=".055" numOctaves="2" seed="7" result="b"/>
+  <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="2" result="g"/>
+  <feComposite in="b" in2="g" operator="arithmetic" k2=".6" k3=".6" result="n"/>
+  <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.4 0 0 0 1.9" result="na"/>
+  <feComposite in="SourceGraphic" in2="na" operator="in"/>
+</filter></defs></svg>"""
 
 
 def slide_html(s, i, total, post):
@@ -158,16 +181,16 @@ def slide_html(s, i, total, post):
     kicker = f'<div class="kick">{esc(s["kicker"])}</div>' if s.get("kicker") else ""
     body = "".join(f"<p>{rich(x)}</p>" for x in s.get("body", []))
     if L == "cover":
-        inner = fig + kicker + f'<h1>{esc(s["title"])}</h1>' + (f'<div class="sub">{rich(s["sub"])}</div>' if s.get("sub") else "") + pencil_block(s)
+        inner = fig + kicker + f'<h1>{esc(s["title"])}</h1>' + (f'<div class="sub">{rich(s["sub"])}</div>' if s.get("sub") else "")
         d = s.get("drawing")
         if d and d.get("type") == "bike":
             inner += bike_figure(d)
     elif L == "stat":
-        inner = fig + kicker + number_block(s) + body + pencil_block(s) + note_block(s)
+        inner = fig + kicker + number_block(s) + body + note_block(s)
     elif L == "text":
-        inner = fig + kicker + f'<h2>{esc(s["heading"])}</h2>' + body + pencil_block(s) + note_block(s)
+        inner = fig + kicker + f'<h2>{esc(s["heading"])}</h2>' + body + note_block(s)
     elif L == "verdict":
-        inner = fig + kicker + f'<div class="stamp"><div><small>VERDICT</small>{esc(s["stamp"])}</div></div>' + body + pencil_block(s) + note_block(s)
+        inner = fig + kicker + f'<div class="stamp"><div><small>VERDICT</small>{esc(s["stamp"])}</div></div>' + body + note_block(s)
     elif L == "end":
         inner = (f'<div class="stamp sm"><div><small>CASE CLOSED</small>נבדק. נחקר.<br>אין שאלות טיפשיות.</div></div>'
                  f'<div class="cta">{esc(s.get("cta", "יש לך שאלה טיפשית? שלח.\nאין כאן כאלה.")).replace(chr(10), "<br>")}</div>'
@@ -178,16 +201,62 @@ def slide_html(s, i, total, post):
           f'<div><small>שקף</small><span class="m">{i}/{total}</span></div><div><small>&nbsp;</small><span class="m">{HANDLE}</span></div></div>')
     chrome = ('<div class="frame"><span class="reg a"></span><span class="reg b"></span><span class="reg c"></span><span class="reg d"></span></div>'
               '<div class="rt"></div><div class="rr"></div>')
-    return f'<section class="s {L}" id="s{i}">{chrome}<div class="in">{inner}</div>{tb}</section>'
+    return f'<section class="s {L}" id="s{i}">{chrome}<div class="in">{inner}{pencil_block(s)}</div>{tb}</section>'
 
 
 def build_html(post):
     total = len(post["slides"])
     slides = "".join(slide_html(s, i + 1, total, post) for i, s in enumerate(post["slides"]))
-    return f'<!doctype html><html lang="he"><head><meta charset="utf-8"><style>{font_faces()}{CSS}</style></head><body>{slides}</body></html>'
+    return f'<!doctype html><html lang="he"><head><meta charset="utf-8"><style>{font_faces()}{CSS}</style></head><body>{FILTERS}{slides}</body></html>'
 
 
 # Runs in the page. Returns a list of problems for one slide.
+# Runs in the page before QA: finds a free spot in the margins for the pencil note, with breathing
+# room so it never hugs the official text. Returns false if there is no room (render then fails).
+PLACE_JS = r"""
+(slide) => {
+  const p = slide.querySelector('.pencil'); if (!p) return true;
+  const inn = slide.querySelector('.in'), ib = inn.getBoundingClientRect(), tb = slide.querySelector('.tb').getBoundingClientRect();
+  const s = slide.getBoundingClientRect();
+  const safe = {left: s.left + 70, right: s.right - 70, top: s.top + 80, bottom: tb.top - 14};
+  const obs = [];
+  const walker = document.createTreeWalker(inn, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) { const n = walker.currentNode; if (!n.textContent.trim() || n.parentElement.closest('.pencil,svg')) continue;
+    const r = document.createRange(); r.selectNodeContents(n);
+    // line boxes include ascent/descent; use where the glyphs actually sit
+    for (const b of r.getClientRects()) obs.push({left: b.left, right: b.right, width: b.width, top: b.top + b.height * .18, bottom: b.bottom - b.height * .18}); }
+  for (const e of inn.querySelectorAll(':scope > svg, .num, .stamp, .note, svg text')) if (!e.closest('.pencil')) obs.push(e.getBoundingClientRect());
+  const idx = +slide.id.slice(1), rot = [-3.5, 2.5, -2, 3, -4, 1.5][idx % 6];
+  p.style.transform = `rotate(${rot}deg)`;
+  const box = () => { const a = p.getBoundingClientRect(), b = p.querySelector('.st').getBoundingClientRect();
+    return {left: Math.min(a.left, b.left), right: Math.max(a.right, b.right), top: Math.min(a.top, b.top), bottom: Math.max(a.bottom, b.bottom)}; };
+  const GAP = 22;
+  const free = (b) => b.left >= safe.left && b.right <= safe.right && b.top >= safe.top && b.bottom <= safe.bottom &&
+    !obs.some(o => o.width && !(b.right + GAP < o.left || b.left - GAP > o.right || b.bottom + GAP < o.top || b.top - GAP > o.bottom));
+  // prefer the left margin (text is right-aligned), then centre, scanning top to bottom
+  // Among all spots that fit, take the one with the most breathing room (furthest from text, drawings
+  // and the frame), so the note floats in open space instead of hugging the official text.
+  const clearance = (b) => {
+    let c = Math.min(b.left - safe.left, safe.right - b.right, b.top - safe.top, safe.bottom - b.bottom);
+    for (const o of obs) { if (!o.width) continue;
+      const dx = Math.max(o.left - b.right, b.left - o.right, 0), dy = Math.max(o.top - b.bottom, b.top - o.bottom, 0);
+      c = Math.min(c, Math.hypot(dx, dy)); }
+    return c; };
+  let best = null;
+  for (const w of [440, 340, 270]) { p.style.maxWidth = w + 'px';
+    for (const x of [30, 70, 120, 180, 260, 340]) for (let y = 30; y < ib.height; y += 12) {
+      p.style.left = x + 'px'; p.style.top = y + 'px';
+      const bb = box(); if (!free(bb)) continue;
+      const c = clearance(bb) + (w === 440 ? 6 : 0);   // slight preference for fewer lines
+      if (!best || c > best.c) best = {c, w, x, y};
+    }
+    if (best) break; }
+  if (best) { p.style.maxWidth = best.w + 'px'; p.style.left = best.x + 'px'; p.style.top = best.y + 'px'; p.style.visibility = 'visible'; return true; }
+  p.style.top = '0px'; p.style.left = '0px';
+  return false;
+}
+"""
+
 QA_JS = r"""
 (slide) => {
   const problems = [];
@@ -215,6 +284,7 @@ QA_JS = r"""
   // 2. no two separate pieces of text overlap
   for (let a = 0; a < texts.length; a++) for (let b = a + 1; b < texts.length; b++) {
     const A = texts[a], B = texts[b]; if (A.el === B.el) continue;
+    const pa = A.el.closest && A.el.closest('.pencil'), pb = B.el.closest && B.el.closest('.pencil'); if (pa && pa === pb) continue;
     // line boxes include the font's ascent/descent; compare the inner ~60% where glyphs actually sit
     const ink = x => ({left: x.left, right: x.right, top: x.top + x.height * .2, bottom: x.bottom - x.height * .2});
     const P = ink(A.b), Q = ink(B.b);
@@ -245,6 +315,8 @@ def render(post_path, out_dir="out"):
         pg.wait_for_timeout(300)
         for i in range(1, len(post["slides"]) + 1):
             el = pg.locator(f"#s{i}")
+            if not el.evaluate(PLACE_JS):
+                failures.append(f"slide {i}: no free margin for the pencil note (shorten it or drop it)")
             for prob in el.evaluate(QA_JS):
                 failures.append(f"slide {i}: {prob}")
             f = out / f"{i:02d}.png"
