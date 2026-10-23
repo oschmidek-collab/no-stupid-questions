@@ -4,3 +4,6 @@ node_modules/
 site/data/
 .dev.vars
 .wrangler/
+engine/node_modules/
+out/
+__pycache__/
