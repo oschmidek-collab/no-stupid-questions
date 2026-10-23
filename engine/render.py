@@ -75,7 +75,8 @@ p{font:400 40px/1.45 "Assistant";margin-top:26px;max-width:860px}
 p b{font-weight:700}
 .sub{font:600 42px/1.38 "Assistant";color:var(--ink2);margin-top:30px;max-width:820px}
 .drawing{margin-top:auto;width:100%}
-.s.cover .drawing{width:88%;align-self:center}
+.drawing{max-height:640px}
+.s.cover .drawing{align-self:center;max-height:500px}
 svg{direction:ltr;overflow:visible}
 .num{display:inline-flex;flex-direction:column;align-items:stretch;margin-top:46px;align-self:flex-start}
 .num b{font:900 250px/.86 "Frank";color:var(--orange);letter-spacing:-.02em;direction:ltr;text-align:right}
@@ -116,18 +117,32 @@ def rich(s):
     return out
 
 
-def bike_figure(spec):
-    inner, anchors = draw.road_bike(accent_frame=True)
+def figure(spec):
+    """Any drafted drawing with leader notes and an optional dimension. spec: {"type": bike|cassette|drivetrain, ...}"""
+    kind = spec.get("type")
+    if kind == "bike":
+        inner, anchors = draw.road_bike(accent_frame=True); vb = "0 0 950 640"
+    elif kind == "cassette":
+        inner, anchors = draw.cassette(); vb = "0 0 950 560"
+    elif kind == "drivetrain":
+        inner, anchors = draw.drivetrain(front=tuple(spec.get("front", (50, 34))), cog=spec.get("cog", 17)); vb = "0 0 950 560"
+    elif kind == "logo":
+        inner, anchors = draw.logo_mark(); vb = "0 0 950 820"
+    else:
+        raise ValueError(f"Unknown drawing type {kind!r}")
     notes = ""
     for n in spec.get("notes", []):
         ax, ay = anchors[n["at"]]
         side = n.get("side", "right")
         ex, ey = n.get("elbow") or ((ax + 70, 62) if side == "right" else (ax - 90, 62))
-        notes += draw.leader([(ax, ay), (ex, ey)], n["title"], n.get("value"), side=side, shelf=n.get("shelf", 240))
-    if spec.get("dim"):
+        notes += draw.leader([(ax, ay), (ex, ey)], n["title"], n.get("value"), side=side, shelf=n.get("shelf", 240), k=float(spec.get("label_scale", 1)))
+    if spec.get("dim") and kind == "bike":
         R, F = anchors["rear_axle"], anchors["front_axle"]
         notes += draw.dim(R[0], R[1], F[0], F[1], spec["dim"], offset=210)
-    return f'<svg class="drawing" viewBox="0 0 950 640">{draw.DEFS}{inner}{notes}</svg>'
+    return f'<svg class="drawing" viewBox="{vb}">{draw.DEFS}{inner}{notes}</svg>'
+
+
+bike_figure = figure
 
 
 def number_block(s):
@@ -183,13 +198,12 @@ def slide_html(s, i, total, post):
     body = "".join(f"<p>{rich(x)}</p>" for x in s.get("body", []))
     if L == "cover":
         inner = fig + kicker + f'<h1>{esc(s["title"])}</h1>' + (f'<div class="sub">{rich(s["sub"])}</div>' if s.get("sub") else "")
-        d = s.get("drawing")
-        if d and d.get("type") == "bike":
-            inner += bike_figure(d)
+        if s.get("drawing"):
+            inner += figure(s["drawing"])
     elif L == "stat":
         inner = fig + kicker + number_block(s) + body + note_block(s)
     elif L == "text":
-        inner = fig + kicker + f'<h2>{esc(s["heading"])}</h2>' + body + note_block(s)
+        inner = fig + kicker + f'<h2>{esc(s["heading"])}</h2>' + body + (figure(s["drawing"]) if s.get("drawing") else "") + note_block(s)
     elif L == "verdict":
         inner = fig + kicker + f'<div class="stamp"><div><small>VERDICT</small>{esc(s["stamp"])}</div></div>' + body + note_block(s)
     elif L == "end":
@@ -212,6 +226,14 @@ def build_html(post):
 
 
 # Runs in the page. Returns a list of problems for one slide.
+# Crop every drawing's viewBox to what is actually drawn, so drawings fill their space and labels stay legible.
+FIT_JS = r"""
+(slide) => { for (const svg of slide.querySelectorAll('svg.drawing')) {
+  const b = svg.getBBox(), pad = 14;
+  svg.setAttribute('viewBox', `${b.x - pad} ${b.y - pad} ${b.width + 2 * pad} ${b.height + 2 * pad}`);
+} return true; }
+"""
+
 # Runs in the page before QA: finds a free spot in the margins for the pencil note, with breathing
 # room so it never hugs the official text. Returns false if there is no room (render then fails).
 PLACE_JS = r"""
@@ -316,6 +338,7 @@ def render(post_path, out_dir="out"):
         pg.wait_for_timeout(300)
         for i in range(1, len(post["slides"]) + 1):
             el = pg.locator(f"#s{i}")
+            el.evaluate(FIT_JS)
             if not el.evaluate(PLACE_JS):
                 failures.append(f"slide {i}: no free margin for the pencil note (shorten it or drop it)")
             for prob in el.evaluate(QA_JS):

@@ -39,32 +39,32 @@ def line(x1, y1, x2, y2, kind="contour", color=None):
     return f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" {style} stroke-linecap="round"/>'
 
 
-def label(x, y, title, value=None, anchor="end", color=BLUE, halo=False):
+def label(x, y, title, value=None, anchor="end", color=BLUE, halo=False, k=1.0):
     """Two-line annotation label: Hebrew title (bold) above a mono value. anchor is LTR semantics."""
-    h = f' paint-order="stroke" stroke="{PAPER}" stroke-width="10" stroke-linejoin="round"' if halo else ""
-    out = f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-family="Assistant" font-weight="700" font-size="27" fill="{color}"{h}>{esc(title)}</text>'
+    h = f' paint-order="stroke" stroke="{PAPER}" stroke-width="{10 * k:.0f}" stroke-linejoin="round"' if halo else ""
+    out = f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-family="Assistant" font-weight="700" font-size="{27 * k:.0f}" fill="{color}"{h}>{esc(title)}</text>'
     if value is not None:
-        out += f'<text x="{x}" y="{y + 38}" text-anchor="{anchor}" font-family="Plex" font-size="24" fill="{color}"{h}>{esc(value)}</text>'
+        out += f'<text x="{x}" y="{y + 38 * k:.0f}" text-anchor="{anchor}" font-family="Plex" font-size="{24 * k:.0f}" fill="{color}"{h}>{esc(value)}</text>'
     return out
 
 
-def leader(points, title, value=None, side="right", shelf=230, color=BLUE, halo=False):
+def leader(points, title, value=None, side="right", shelf=230, color=BLUE, halo=False, k=1.0):
     """Leader from an anchor dot through elbow points, ending in a horizontal shelf carrying the label.
     side='right': shelf extends right from the last point, label right-aligned at its end.
-    side='left' : shelf extends left, label left-aligned at its end."""
+    side='left' : shelf extends left, label left-aligned at its end.  k scales text, dots and line weight."""
     (ax, ay), *rest = points
     ex, ey = rest[-1] if rest else (ax, ay)
     sx = ex + shelf if side == "right" else ex - shelf
     d = "M" + " L".join(f"{x:.1f} {y:.1f}" for x, y in points) + f" L{sx:.1f} {ey:.1f}"
     under = ""
     if halo:
-        under = f'<path d="{d}" fill="none" stroke="{PAPER}" stroke-width="6" stroke-opacity=".85" stroke-linejoin="round"/>'
-    out = under + f'<path d="{d}" fill="none" stroke="{color}" stroke-width="1.4" stroke-linejoin="round"/>'
-    out += f'<circle cx="{ax}" cy="{ay}" r="5.5" fill="{color}"/><circle cx="{ax}" cy="{ay}" r="10" fill="none" stroke="{color}" stroke-width="1"/>'
-    lx, anchor = (sx, "end") if side == "right" else (sx, "start")
-    out += label(lx, ey - 14, title, None, anchor, color, halo)
+        under = f'<path d="{d}" fill="none" stroke="{PAPER}" stroke-width="{6 * k:.1f}" stroke-opacity=".85" stroke-linejoin="round"/>'
+    out = under + f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{1.4 * k:.1f}" stroke-linejoin="round"/>'
+    out += f'<circle cx="{ax}" cy="{ay}" r="{5.5 * k:.1f}" fill="{color}"/><circle cx="{ax}" cy="{ay}" r="{10 * k:.1f}" fill="none" stroke="{color}" stroke-width="{k:.1f}"/>'
+    anchor = "end" if side == "right" else "start"
+    out += label(sx, ey - 14 * k, title, None, anchor, color, halo, k)
     if value is not None:
-        out += f'<text x="{lx}" y="{ey + 32}" text-anchor="{anchor}" font-family="Plex" font-size="24" fill="{color}"' + (f' paint-order="stroke" stroke="{PAPER}" stroke-width="10"' if halo else "") + f'>{esc(value)}</text>'
+        out += f'<text x="{sx}" y="{ey + 34 * k:.0f}" text-anchor="{anchor}" font-family="Plex" font-size="{24 * k:.0f}" fill="{color}"' + (f' paint-order="stroke" stroke="{PAPER}" stroke-width="{10 * k:.0f}"' if halo else "") + f'>{esc(value)}</text>'
     return out
 
 
@@ -158,4 +158,110 @@ def road_bike(accent_frame=True):
                "down_tube": ((BB[0] + HT_B[0]) / 2, (BB[1] + HT_B[1]) / 2),
                "seat_tube": ((BB[0] + ST[0]) / 2, (BB[1] + ST[1]) / 2),
                "rear_axle": R, "front_axle": F, "bb": BB}
+    return out, anchors
+
+
+def sprocket(cx, cy, teeth, k=4.2, fill=PAPER, stroke=INK, sw=2.2, inner=None):
+    """Front view of a sprocket with real teeth. Pitch radius scales with tooth count."""
+    R = teeth * k / 2
+    h = 5.5
+    pts = []
+    for i in range(teeth):
+        a = 2 * math.pi * i / teeth
+        step = math.pi / teeth
+        for da, r in ((-step, R - h * .7), (-step * .38, R + h), (step * .38, R + h)):
+            pts.append((cx + r * math.cos(a + da), cy + r * math.sin(a + da)))
+    d = "M" + " L".join(f"{x:.1f} {y:.1f}" for x, y in pts) + " Z"
+    out = f'<path d="{d}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}" stroke-linejoin="round"/>'
+    out += f'<circle cx="{cx}" cy="{cy}" r="{R - h * 2.2:.1f}" fill="none" stroke="{stroke}" stroke-width=".9" stroke-opacity=".6"/>'
+    if inner:
+        out += f'<circle cx="{cx}" cy="{cy}" r="{inner}" fill="{PAPER}" stroke="{stroke}" stroke-width="1.6"/>'
+    return out, R
+
+
+def cassette(teeth=(11, 12, 13, 14, 15, 17, 19, 21, 24, 27, 30, 34), accent_largest=True):
+    """Cassette: front view (left) and edge view (right). viewBox 0 0 950 560. Returns (svg, anchors)."""
+    out = ""
+    cx, cy, k = 250, 290, 6.4
+    # front view: every sprocket, largest first, each outline visible
+    # draw a readable subset with real teeth; the rest as hairline pitch circles (like a real exploded view)
+    shown = [t for t in sorted(teeth, reverse=True)][::3] + [min(teeth)]
+    for t in sorted(teeth, reverse=True):
+        is_acc = accent_largest and t == max(teeth)
+        if t in shown:
+            s, R = sprocket(cx, cy, t, k=k, fill=ACCENT if is_acc else PAPER, sw=2.4 if is_acc else 1.6)
+            out += s
+        else:
+            out += f'<circle cx="{cx}" cy="{cy}" r="{t * k / 2:.1f}" fill="none" stroke="{INK}" stroke-width=".9" stroke-opacity=".55" stroke-dasharray="3 3"/>'
+
+    # splined freehub + lockring
+    out += f'<circle cx="{cx}" cy="{cy}" r="30" fill="{PAPER}" stroke="{INK}" stroke-width="2.4"/>'
+    for i in range(12):
+        a = 2 * math.pi * i / 12
+        out += f'<line x1="{cx + 22 * math.cos(a):.1f}" y1="{cy + 22 * math.sin(a):.1f}" x2="{cx + 30 * math.cos(a):.1f}" y2="{cy + 30 * math.sin(a):.1f}" stroke="{INK}" stroke-width="1.6"/>'
+    out += f'<circle cx="{cx}" cy="{cy}" r="9" fill="{INK}"/>'
+    out += line(cx - 140, cy, cx + 140, cy, "centre") + line(cx, cy - 140, cx, cy + 140, "centre")
+    # edge view: sprockets as plates, tallest = most teeth, axle centre line through
+    ex, gap = 600, 19
+    out += line(ex - 60, cy, ex + gap * len(teeth) + 70, cy, "centre")
+    out += f'<rect x="{ex - 24}" y="{cy - 36}" width="{gap * len(teeth) + 34}" height="72" fill="url(#hatch)" stroke="{INK}" stroke-width="1.6"/>'
+    plates = sorted(teeth, reverse=True)  # largest nearest the spokes
+    for i, t in enumerate(plates):
+        h = t * k / 2 + 5
+        x = ex + i * gap
+        is_acc = accent_largest and t == max(teeth)
+        out += f'<rect x="{x:.1f}" y="{cy - h:.1f}" width="6" height="{2 * h:.1f}" rx="1.5" fill="{ACCENT if is_acc else PAPER}" stroke="{INK}" stroke-width="1.6"/>'
+    lx = ex + len(teeth) * gap + 2
+    out += f'<rect x="{lx}" y="{cy - 40}" width="14" height="80" rx="2" fill="{PAPER}" stroke="{INK}" stroke-width="2.4"/>'
+    big_h = max(teeth) * k / 2 + 5
+    small_h = min(teeth) * k / 2 + 5
+    anchors = {"largest_front": (cx + max(teeth) * k / 2 * math.cos(-.9), cy + max(teeth) * k / 2 * math.sin(-.9)),
+               "smallest_front": (cx + min(teeth) * k / 2 * .7, cy - min(teeth) * k / 2 * .7),
+               "largest_edge": (ex + 3, cy - big_h), "smallest_edge": (ex + (len(teeth) - 1) * gap + 3, cy - small_h),
+               "lockring": (lx + 7, cy - 40), "freehub": (ex - 10, cy + 36), "centre": (cx, cy)}
+    return out, anchors
+
+
+def drivetrain(front=(50, 34), cog=17, accent="chain"):
+    """Side view: rear cassette (left), chainrings (right), chain on the chosen cog. viewBox 0 0 950 560."""
+    out = ""
+    k = 5.6
+    rx, ry, fx, fy = 210, 300, 690, 330
+    for t in (34, 27, 21, 15, 11):
+        s, _ = sprocket(rx, ry, t, k=k, sw=1.2)
+        out += s
+    s, Rc = sprocket(rx, ry, cog, k=k, sw=2.4)
+    out += s
+    for t in sorted(front, reverse=True):
+        s, _ = sprocket(fx, fy, t, k=k, sw=2.2 if t == max(front) else 1.6)
+        out += s
+    Rf = max(front) * k / 2
+    out += f'<circle cx="{fx}" cy="{fy}" r="22" fill="{PAPER}" stroke="{INK}" stroke-width="2.2"/>'
+    out += f'<path d="M{fx} {fy} L{fx - 70} {fy + 150}" stroke="{INK}" stroke-width="12" stroke-linecap="round"/><path d="M{fx} {fy} L{fx - 70} {fy + 150}" stroke="{PAPER}" stroke-width="6" stroke-linecap="round"/>'
+    # chain: top run from top of chainring to top of cog; bottom run via derailleur pulleys
+    p1, p2 = (rx + 60, ry + Rc + 70), (rx + 20, ry + Rc + 120)
+    col = ACCENT if accent == "chain" else INK
+    chain = (f"M{fx} {fy - Rf} L{rx} {ry - Rc} A{Rc} {Rc} 0 0 0 {rx - Rc} {ry} A{Rc} {Rc} 0 0 0 {rx + Rc * .6:.1f} {ry + Rc * .8:.1f} "
+             f"L{p1[0]} {p1[1] - 14} A14 14 0 0 1 {p1[0] + 4} {p1[1] + 13} L{p2[0]} {p2[1] - 14} A14 14 0 0 0 {p2[0] + 2} {p2[1] + 14} L{fx} {fy + Rf}")
+    out += f'<path d="{chain}" fill="none" stroke="{INK}" stroke-width="7.5" stroke-linejoin="round"/>'
+    out += f'<path d="{chain}" fill="none" stroke="{col}" stroke-width="3.6" stroke-linejoin="round" stroke-dasharray="10 2.5"/>'
+    for (x, y) in (p1, p2):
+        out += f'<circle cx="{x}" cy="{y}" r="14" fill="{PAPER}" stroke="{INK}" stroke-width="2"/><circle cx="{x}" cy="{y}" r="3" fill="{INK}"/>'
+    out += line(rx - 120, ry, fx + 150, ry, "centre") + line(rx, ry - 120, rx, ry + 120, "centre") + line(fx, fy - 170, fx, fy + 170, "centre")
+    anchors = {"chainring": (fx + Rf * .7, fy - Rf * .7), "cog": (rx - Rc * .7, ry - Rc * .7), "cassette": (rx - 34 * k / 2 * .7, ry + 34 * k / 2 * .7),
+               "chain_top": ((fx + rx) / 2, (fy - Rf + ry - Rc) / 2), "rear": (rx, ry), "front": (fx, fy), "pulley": p2}
+    return out, anchors
+
+
+def logo_mark():
+    """The page mark: a question mark whose dot is a wheel, drafted. viewBox ~ 0 0 950 760."""
+    ox, oy = 475 - 548, -150   # shift avatar geometry into view
+    q = f"M{368+ox} {400+oy} C{368+ox} {262+oy} {452+ox} {188+oy} {548+ox} {188+oy} C{652+ox} {188+oy} {724+ox} {258+oy} {724+ox} {352+oy} C{724+ox} {430+oy} {680+ox} {474+oy} {616+ox} {512+oy} C{566+ox} {542+oy} {548+ox} {572+oy} {548+ox} {628+oy} L{548+ox} {668+oy}"
+    out = f'<path d="{q}" fill="none" stroke="{INK}" stroke-width="104" stroke-linecap="round" stroke-linejoin="round"/>'
+    out += f'<path d="{q}" fill="none" stroke="{ACCENT}" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>'
+    out += f'<path d="{q}" fill="none" stroke="{BLUE}" stroke-width="1" stroke-dasharray="22 5 3 5"/>'
+    out += wheel(548 + ox, 838 + oy, 92, spokes=16)
+    cx = 548 + ox
+    out += line(cx, 120 + oy, cx, 950 + oy, "centre")
+    anchors = {"hook": (724 + ox - 48, 300 + oy), "dot": (548 + ox + 66, 838 + oy - 64), "stem": (548 + ox, 600 + oy)}
     return out, anchors
