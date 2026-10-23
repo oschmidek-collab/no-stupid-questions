@@ -75,6 +75,7 @@ p{font:400 40px/1.45 "Assistant";margin-top:26px;max-width:860px}
 p b{font-weight:700}
 .sub{font:600 42px/1.38 "Assistant";color:var(--ink2);margin-top:30px;max-width:820px}
 .drawing{margin-top:auto;width:100%}
+.s.cover .drawing{width:88%;align-self:center}
 svg{direction:ltr;overflow:visible}
 .num{display:inline-flex;flex-direction:column;align-items:stretch;margin-top:46px;align-self:flex-start}
 .num b{font:900 250px/.86 "Frank";color:var(--orange);letter-spacing:-.02em;direction:ltr;text-align:right}
@@ -90,13 +91,13 @@ svg{direction:ltr;overflow:visible}
 .stamp small{display:block;font:500 24px "Plex";letter-spacing:.2em;margin-bottom:10px;direction:ltr}
 .stamp.sm>div{font-size:56px;line-height:1.2;padding:18px 34px 22px}
 /* the pencil layer: unofficial scribbles that float in the empty margins, placed by PLACE_JS */
-.pencil{position:absolute;top:0;left:0;max-width:440px;color:#3D3B37;transform-origin:center;visibility:hidden}
+.pencil{position:absolute;top:0;left:0;max-width:440px;padding-top:6px;text-align:center;color:#3D3B37;transform-origin:center;visibility:hidden}
 .pencil .t{font:400 34px/1.32 "Pencil";display:block;filter:url(#graphite)}
-.pencil svg.sq{display:block;width:150px;height:22px;margin-top:2px;filter:url(#graphite)}
-.pencil .st{position:absolute;top:-6px;left:calc(100% + 14px);transform:rotate(-9deg);color:#1F4E8C;border:3px solid currentColor;
+.pencil svg.sq{display:block;width:150px;height:22px;margin:2px auto 0;filter:url(#graphite)}
+.pencil .st{position:absolute;bottom:calc(100% - 2px);left:50%;transform:translateX(-50%) rotate(-5deg);color:#1F4E8C;border:3px solid currentColor;
   padding:3px;filter:url(#rubber);opacity:.88;white-space:nowrap}
 .pencil .st>div{border:1.2px solid currentColor;padding:2px 10px 3px;text-align:center;line-height:1.05}
-.pencil .st b{display:block;font:900 24px "Frank"}
+.pencil .st b{display:block;font:900 22px "Frank"}
 .pencil .st small{display:block;font:500 11px "Plex";letter-spacing:.22em;direction:ltr}
 .s.end .in{justify-content:center;padding-bottom:120px}
 .cta{font:700 66px/1.18 "Frank";text-align:center;margin-top:40px}
@@ -153,7 +154,7 @@ def pencil_block(s):
         return ""
     squiggle = ('<svg class="sq" viewBox="0 0 150 22"><path d="M2 12 C16 4 28 19 44 10 S72 3 88 12 S118 19 148 7" fill="none" '
                 'stroke="#3D3B37" stroke-width="1.8" stroke-linecap="round"/></svg>')
-    stamp = '<span class="st"><div><b>לא נבדק</b><small>UNVERIFIED</small></div></span>'
+    stamp = '<span class="st"><div><b>עובדה לא בדוקה</b><small>UNVERIFIED</small></div></span>'
     return f'<div class="pencil"><span class="t">{esc(s["pencil"])}</span>{squiggle}{stamp}</div>'
 
 
