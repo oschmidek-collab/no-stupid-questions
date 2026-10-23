@@ -212,6 +212,7 @@ async function toggle(id, li){
   try {
     const r = await fetch('api/tasks', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, done:now})});
     if (!r.ok) throw 0;
+    t.done = now; const l = localDone(); delete l[id]; saveLocal(l); // server is the source of truth now
   } catch(e){ toast(now ? 'סומן בוצע. נשמר במכשיר הזה בלבד עד שהשרת יחובר.' : 'הסימון בוטל.'); }
 }
 

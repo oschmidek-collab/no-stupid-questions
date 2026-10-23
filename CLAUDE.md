@@ -14,8 +14,8 @@
 | מוח שבועי | ניתוח ביצועים, תוכנית שבועית, עדכון `data/plan.json` ו־`data/decisions.json` | משימה מתוזמנת של Claude |
 | מנוע יומי | ייצור תוכן, פרסום, מענה לתגובות, משיכת נתונים | `engine/` + GitHub Actions |
 | מוח יומי | ניסוח כיתובים ותגובות | Gemini Flash (API חינמי) |
-| לוח בקרה | צ'קליסט, תור תוכן, שאלות, צמיחה, יומן החלטות | `site/` על Cloudflare Pages, מאחורי Cloudflare Access |
-| שמירת צ'קליסט | פונקציה שכותבת את `data/tasks.json` לריפו | `functions/api/tasks.js` |
+| לוח בקרה | צ'קליסט, תור תוכן, שאלות, צמיחה, יומן החלטות | `site/` כ־Cloudflare Worker עם static assets, מאחורי Cloudflare Access |
+| שרת לוח הבקרה | מגיש את `data/*.json` חי מהריפו, ושומר סימוני צ'קליסט כ־commit | `worker.js` + `wrangler.jsonc` |
 
 כל המצב נשמר כקבצי JSON בתיקייה `data/`. הריפו הוא מקור האמת היחיד.
 
@@ -39,4 +39,5 @@
 ## מוסכמות קוד
 - האתר: HTML/CSS/JS סטטי בלי build, עברית, RTL, mobile-first.
 - צבעים: רקע #F5F1E8, טקסט #1A1A1A, כתום #FF5A1F, כחול #1F4E8C. גופנים: Heebo, Assistant, IBM Plex Mono.
-- סודות רק ב־GitHub Secrets / Cloudflare env, אף פעם לא בקוד.
+- סודות רק ב־GitHub Secrets / Cloudflare (Worker → Settings → Variables and Secrets), אף פעם לא בקוד.
+- כל push ל־main מפרסם את לוח הבקרה מחדש אוטומטית (Workers Builds).

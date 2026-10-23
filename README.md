@@ -6,22 +6,17 @@
 ## מבנה
 ```
 site/            לוח הבקרה (HTML סטטי)
-functions/api/   שמירת הצ'קליסט (Cloudflare Pages Function)
+worker.js        שרת קטן: מגיש את data/ חי מהריפו ושומר סימוני צ'קליסט
+wrangler.jsonc   הגדרות ה־Worker ב־Cloudflare
 data/            כל המצב של הסוכן, כקבצי JSON
-engine/          סקריפטי הסוכן (בבנייה)
-.github/         תזמונים ב־GitHub Actions (בבנייה)
 ```
 
-## הקמת לוח הבקרה ב־Cloudflare Pages (פעם אחת, כ־10 דקות)
-1. ב־Cloudflare: **Workers & Pages ← Create ← Pages ← Connect to Git**, ובוחרים את הריפו.
-2. הגדרות build:
-   - Build command: `mkdir -p site/data && cp data/*.json site/data/`
-   - Build output directory: `site`
-3. **Settings ← Variables and Secrets**, מוסיפים:
-   - `GITHUB_REPO` = `oschmidek-collab/no-stupid-questions`
-   - `GITHUB_TOKEN` = טוקן מסוג fine-grained מ־GitHub (Settings ← Developer settings ← Personal access tokens ← Fine-grained), עם גישה **רק** לריפו הזה והרשאת **Contents: Read and write**. מסמנים אותו כ־Secret.
-4. **נעילה:** Zero Trust ← Access ← Applications ← Add ← Self-hosted. הדומיין של האתר, ומדיניות Allow רק לכתובת המייל שלך. מעכשיו הכניסה לאתר היא בקוד חד־פעמי למייל.
-5. Deploy. כל commit לריפו מעדכן את האתר אוטומטית.
+## הקמת לוח הבקרה ב־Cloudflare (פעם אחת)
+1. **Compute ← Workers & Pages ← Create**, ייבוא מ־GitHub ובחירת הריפו. Build command: ריק. Deploy command: `npx wrangler deploy`.
+2. טוקן ב־GitHub (Settings ← Developer settings ← Personal access tokens ← Fine-grained): גישה **רק** לריפו הזה, **Contents: Read and write**.
+3. ב־Worker: **Settings ← Variables and Secrets ← Add**, סוג **Secret**, שם `GITHUB_TOKEN`, והטוקן כערך. (`GITHUB_REPO` כבר מוגדר ב־`wrangler.jsonc`.)
+4. **נעילה:** ב־Worker, **Settings ← Domains & Routes**, ליד `workers.dev` מפעילים **Cloudflare Access**, ומגבילים לכתובת המייל שלך.
+5. כל push ל־main מפרסם מחדש אוטומטית. הנתונים עצמם נקראים חי מהריפו, כך שעדכון של הסוכן מופיע מיד, בלי פרסום מחדש.
 
 ## פיתוח מקומי
-פותחים את `site/index.html` דרך שרת סטטי שמגיש גם את `data/`. בלי השרת של Cloudflare, סימוני הצ'קליסט נשמרים רק בדפדפן.
+`npx wrangler dev`, עם `GITHUB_TOKEN` בקובץ `.dev.vars` (לא נכנס ל־git).
