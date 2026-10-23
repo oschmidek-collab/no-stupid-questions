@@ -1,50 +1,92 @@
 [
  {
   "id": "p1",
-  "date": "2026-10-26",
+  "date": "2026-11-03",
   "platform": "ig",
   "series": "פתיחה",
-  "title": "מה זה העמוד הזה? הצהרת כוונות",
-  "status": "ready"
+  "title": "מה זה העמוד הזה? פרוטוקול הקמה",
+  "status": "idea",
+  "format": "carousel"
  },
  {
   "id": "p2",
-  "date": "2026-10-27",
+  "date": "2026-11-03",
   "platform": "ig",
   "series": "ועדת חקירה",
   "title": "האם צבע האופניים משפיע על המהירות?",
-  "status": "ready"
+  "status": "draft",
+  "format": "carousel"
  },
  {
   "id": "p3",
-  "date": "2026-10-28",
-  "platform": "tt",
-  "series": "הטעות של השבוע",
-  "title": "ניפוח הצמיג \"עד שהוא קשה\"",
-  "status": "idea"
- },
- {
-  "id": "p4",
-  "date": "2026-10-29",
+  "date": "2026-11-03",
   "platform": "ig",
   "series": "השאלה של היום",
   "title": "למה יש כל כך הרבה הילוכים?",
-  "status": "idea"
+  "status": "idea",
+  "format": "carousel"
  },
  {
-  "id": "p5",
-  "date": "2026-10-30",
-  "platform": "ig",
-  "series": "מסלול בשאלה",
-  "title": "יש רכיבה שטוחה ליד תל אביב?",
-  "status": "idea"
- },
- {
-  "id": "p6",
-  "date": "2026-11-01",
+  "id": "p4",
+  "date": "2026-11-03",
   "platform": "ig",
   "series": "מילון ג'יבריש",
   "title": "מה זה קסטה?",
-  "status": "idea"
+  "status": "idea",
+  "format": "carousel"
+ },
+ {
+  "id": "p5",
+  "date": "2026-11-03",
+  "platform": "ig+tt",
+  "series": "מיתוס או אמת",
+  "title": "אופניים חשמליים זה רמאות?",
+  "status": "idea",
+  "format": "reel"
+ },
+ {
+  "id": "p6",
+  "date": "2026-11-03",
+  "platform": "ig+tt",
+  "series": "הטעות של השבוע",
+  "title": "ניפוח הצמיג \"עד שהוא קשה\"",
+  "status": "idea",
+  "format": "reel"
+ },
+ {
+  "id": "p7",
+  "date": "2026-11-03",
+  "platform": "ig",
+  "series": "מסלול בשאלה",
+  "title": "יש רכיבה שטוחה בתל אביב?",
+  "status": "idea",
+  "format": "carousel"
+ },
+ {
+  "id": "p8",
+  "date": "2026-11-03",
+  "platform": "ig",
+  "series": "המספרים שמאחורי",
+  "title": "למה אופניים לא נופלים?",
+  "status": "idea",
+  "format": "carousel"
+ },
+ {
+  "id": "p9",
+  "date": "2026-11-03",
+  "platform": "ig",
+  "series": "השאלה של היום",
+  "title": "מה זה stack ו־reach, ולמה זה חשוב יותר מהמידה?",
+  "status": "idea",
+  "format": "carousel"
+ },
+ {
+  "id": "p10",
+  "date": "2026-11-03",
+  "platform": "ig+tt",
+  "series": "שאלות מבן/בת הזוג",
+  "title": "למה צריך ארבעה זוגות אופניים?",
+  "status": "idea",
+  "format": "reel"
  }
 ]
