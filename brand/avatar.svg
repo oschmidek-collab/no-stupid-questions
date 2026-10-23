@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <pattern id="g" width="54" height="54" patternUnits="userSpaceOnUse">
+      <path d="M54 0H0V54" fill="none" stroke="#1F4E8C" stroke-opacity=".09" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="1080" height="1080" fill="#F5F1E8"/>
+  <rect width="1080" height="1080" fill="url(#g)"/>
+  <!-- question mark: hook + stem -->
+  <path d="M368 400 C368 262 452 188 548 188 C652 188 724 258 724 352 C724 430 680 474 616 512 C566 542 548 572 548 628 L548 668"
+        fill="none" stroke="#FF5A1F" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- the dot is a wheel -->
+  <g transform="translate(548 838)">
+    <circle r="92" fill="#F5F1E8" stroke="#1A1A1A" stroke-width="22"/>
+    <g stroke="#1A1A1A" stroke-width="7" stroke-linecap="round">
+      <line x1="0" y1="-80" x2="0" y2="80"/><line x1="-80" y1="0" x2="80" y2="0"/>
+      <line x1="-57" y1="-57" x2="57" y2="57"/><line x1="-57" y1="57" x2="57" y2="-57"/>
+    </g>
+    <circle r="18" fill="#1A1A1A"/>
+  </g>
+</svg>
