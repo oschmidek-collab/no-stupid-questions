@@ -1,0 +1,68 @@
+name: Publish to Instagram
+
+on:
+  schedule:
+    # 18:07 Israel time (15:07 UTC in winter; adjust with DST if needed)
+    - cron: "7 15 * * *"
+  workflow_dispatch:
+    inputs:
+      post_id:
+        description: "Post id to publish now (e.g. p2). Empty = next post due."
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-instagram
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      MEDIA_BASE_URL: https://no-stupid-questions.oschmidek.workers.dev/media
+      TZ: Asia/Jerusalem
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick the post
+        id: pick
+        run: |
+          ID="${{ github.event.inputs.post_id }}"
+          if [ -z "$ID" ]; then ID=$(python3 engine/publish_ig.py next); fi
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+          if [ -z "$ID" ]; then echo "Nothing due today."; fi
+
+      - name: Set up rendering
+        if: steps.pick.outputs.id != ''
+        run: |
+          pip install playwright pillow
+          python3 -m playwright install --with-deps chromium
+          cd engine && npm ci
+
+      - name: Render and stage images
+        if: steps.pick.outputs.id != ''
+        run: python3 engine/publish_ig.py prepare "${{ steps.pick.outputs.id }}"
+
+      - name: Push images so they are public
+        if: steps.pick.outputs.id != ''
+        run: |
+          git config user.name "nsq-agent"
+          git config user.email "nsq-agent@users.noreply.github.com"
+          git add media/
+          git commit -m "media: ${{ steps.pick.outputs.id }}" || echo "images unchanged"
+          git push
+
+      - name: Publish
+        if: steps.pick.outputs.id != ''
+        run: python3 engine/publish_ig.py publish "${{ steps.pick.outputs.id }}"
+
+      - name: Record the result
+        if: steps.pick.outputs.id != ''
+        run: |
+          git add data/queue.json
+          git commit -m "published: ${{ steps.pick.outputs.id }}" || true
+          git pull --rebase && git push

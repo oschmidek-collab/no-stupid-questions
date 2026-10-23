@@ -20,3 +20,9 @@ data/            כל המצב של הסוכן, כקבצי JSON
 
 ## פיתוח מקומי
 `npx wrangler dev`, עם `GITHUB_TOKEN` בקובץ `.dev.vars` (לא נכנס ל־git).
+
+## פרסום לאינסטגרם
+- `engine/publish_ig.py` מרנדר פוסט ל־JPEG תחת `media/<id>/`, מחכה שהתמונות יהיו ציבוריות, ומפרסם קרוסלה.
+- `.github/workflows/publish-instagram.yml` רץ כל יום ב־18:07 ומפרסם את הפוסט הבא שמועדו הגיע (`status: ready` ב־`data/queue.json`). אפשר להריץ ידנית מ־Actions עם מזהה פוסט.
+- Secret ב־GitHub: `IG_ACCESS_TOKEN` (טוקן ארוך טווח, 60 יום).
+- ב־Cloudflare Access צריך כלל **Bypass** לנתיב `/media/*`, כדי שאינסטגרם יוכל למשוך את התמונות. כל השאר נשאר נעול.

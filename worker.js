@@ -16,6 +16,11 @@ export default {
     const m = url.pathname.match(/^\/data\/([a-z]+)\.json$/);
     if (m && request.method === 'GET') return getData(m[1], env);
 
+    // Public: finished post images, so Instagram can fetch them when publishing.
+    // Cloudflare Access must have a Bypass rule for /media/* (see README).
+    const md = url.pathname.match(/^\/media\/([a-z0-9_-]+)\/(\d{2})\.jpg$/);
+    if (md && request.method === 'GET') return getMedia(md[1], md[2], env);
+
     if (url.pathname === '/api/tasks') {
       if (request.method !== 'POST') return json({ error: 'Use POST' }, 405);
       return saveTask(request, env);
@@ -45,6 +50,13 @@ async function getData(name, env) {
   return new Response(await r.text(), {
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
   });
+}
+
+async function getMedia(post, n, env) {
+  const { url, headers } = gh(env, `media/${post}/${n}.jpg`);
+  const r = await fetch(url, { headers: { ...headers, Accept: 'application/vnd.github.raw+json' } });
+  if (!r.ok) return new Response('Not found', { status: 404 });
+  return new Response(r.body, { headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=3600' } });
 }
 
 async function saveTask(request, env) {
