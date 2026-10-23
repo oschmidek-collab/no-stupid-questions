@@ -1,0 +1,23 @@
+[
+ {
+  "id": "q1",
+  "received": "2026-10-22",
+  "text": "למה רוכבי כביש מגלחים רגליים?",
+  "level": "beginner",
+  "status": "new"
+ },
+ {
+  "id": "q2",
+  "received": "2026-10-22",
+  "text": "האם 1x באמת מספיק לגראבל בהרים?",
+  "level": "pro",
+  "status": "planned"
+ },
+ {
+  "id": "q3",
+  "received": "2026-10-21",
+  "text": "כל כמה זמן צריך להחליף שרשרת?",
+  "level": "regular",
+  "status": "new"
+ }
+]

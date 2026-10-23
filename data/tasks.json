@@ -1,0 +1,67 @@
+[
+ {
+  "id": "s1",
+  "date": "2026-10-23",
+  "type": "create",
+  "url": "https://www.instagram.com/accounts/emailsignup/",
+  "instruction": "לפתוח חשבון אינסטגרם חדש ולהעביר אותו לחשבון יוצר (Creator) בהגדרות",
+  "done": false
+ },
+ {
+  "id": "s2",
+  "date": "2026-10-23",
+  "type": "create",
+  "url": "https://www.tiktok.com/signup",
+  "instruction": "לפתוח חשבון טיקטוק חדש באותו שם",
+  "done": false
+ },
+ {
+  "id": "s3",
+  "date": "2026-10-23",
+  "type": "create",
+  "url": "https://aistudio.google.com/apikey",
+  "instruction": "ליצור מפתח Gemini API (חינמי) ולשמור אותו בצד",
+  "done": false
+ },
+ {
+  "id": "s4",
+  "date": "2026-10-23",
+  "type": "create",
+  "url": "https://dash.cloudflare.com/sign-up",
+  "instruction": "לפתוח חשבון Cloudflare חינמי",
+  "done": false
+ },
+ {
+  "id": "d1",
+  "date": "2026-10-23",
+  "type": "like",
+  "url": "https://www.instagram.com/explore/tags/אופניים/",
+  "instruction": "לייק לשלושה פוסטים אחרונים בהאשטג",
+  "done": false
+ },
+ {
+  "id": "d2",
+  "date": "2026-10-23",
+  "type": "comment",
+  "url": "https://www.instagram.com/explore/tags/רכיבה/",
+  "instruction": "תגובה על פוסט של מסלול",
+  "text": "איזה מסלול! כמה זמן לקח לכם?",
+  "done": false
+ },
+ {
+  "id": "d3",
+  "date": "2026-10-23",
+  "type": "follow",
+  "url": "https://www.instagram.com/explore/tags/גראבל/",
+  "instruction": "לעקוב אחרי רוכב מקומי פעיל אחד",
+  "done": false
+ },
+ {
+  "id": "d4",
+  "date": "2026-10-23",
+  "type": "review",
+  "url": "",
+  "instruction": "לאשר את הסגנון של שלושת הפוסטים הראשונים בתור",
+  "done": false
+ }
+]

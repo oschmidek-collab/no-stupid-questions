@@ -1,0 +1,249 @@
+{
+ "demo": true,
+ "goals": {
+  "ig_followers": 1000,
+  "tt_followers": 1500
+ },
+ "daily": [
+  {
+   "date": "2026-09-24",
+   "ig_followers": 5,
+   "tt_followers": 12,
+   "reach": 511,
+   "saves": 30,
+   "shares": 17
+  },
+  {
+   "date": "2026-09-25",
+   "ig_followers": 9,
+   "tt_followers": 17,
+   "reach": 496,
+   "saves": 7,
+   "shares": 14
+  },
+  {
+   "date": "2026-09-26",
+   "ig_followers": 19,
+   "tt_followers": 30,
+   "reach": 540,
+   "saves": 21,
+   "shares": 19
+  },
+  {
+   "date": "2026-09-27",
+   "ig_followers": 30,
+   "tt_followers": 45,
+   "reach": 1046,
+   "saves": 19,
+   "shares": 6
+  },
+  {
+   "date": "2026-09-28",
+   "ig_followers": 37,
+   "tt_followers": 56,
+   "reach": 592,
+   "saves": 25,
+   "shares": 12
+  },
+  {
+   "date": "2026-09-29",
+   "ig_followers": 43,
+   "tt_followers": 66,
+   "reach": 1234,
+   "saves": 28,
+   "shares": 15
+  },
+  {
+   "date": "2026-09-30",
+   "ig_followers": 48,
+   "tt_followers": 82,
+   "reach": 1454,
+   "saves": 43,
+   "shares": 12
+  },
+  {
+   "date": "2026-10-01",
+   "ig_followers": 54,
+   "tt_followers": 95,
+   "reach": 1689,
+   "saves": 29,
+   "shares": 7
+  },
+  {
+   "date": "2026-10-02",
+   "ig_followers": 66,
+   "tt_followers": 111,
+   "reach": 794,
+   "saves": 31,
+   "shares": 24
+  },
+  {
+   "date": "2026-10-03",
+   "ig_followers": 75,
+   "tt_followers": 124,
+   "reach": 1687,
+   "saves": 41,
+   "shares": 15
+  },
+  {
+   "date": "2026-10-04",
+   "ig_followers": 86,
+   "tt_followers": 146,
+   "reach": 1230,
+   "saves": 29,
+   "shares": 16
+  },
+  {
+   "date": "2026-10-05",
+   "ig_followers": 95,
+   "tt_followers": 155,
+   "reach": 1126,
+   "saves": 18,
+   "shares": 21
+  },
+  {
+   "date": "2026-10-06",
+   "ig_followers": 111,
+   "tt_followers": 172,
+   "reach": 2082,
+   "saves": 51,
+   "shares": 23
+  },
+  {
+   "date": "2026-10-07",
+   "ig_followers": 122,
+   "tt_followers": 185,
+   "reach": 1480,
+   "saves": 22,
+   "shares": 21
+  },
+  {
+   "date": "2026-10-08",
+   "ig_followers": 131,
+   "tt_followers": 209,
+   "reach": 1705,
+   "saves": 30,
+   "shares": 20
+  },
+  {
+   "date": "2026-10-09",
+   "ig_followers": 144,
+   "tt_followers": 229,
+   "reach": 2343,
+   "saves": 32,
+   "shares": 19
+  },
+  {
+   "date": "2026-10-10",
+   "ig_followers": 152,
+   "tt_followers": 241,
+   "reach": 1728,
+   "saves": 38,
+   "shares": 28
+  },
+  {
+   "date": "2026-10-11",
+   "ig_followers": 168,
+   "tt_followers": 259,
+   "reach": 1570,
+   "saves": 43,
+   "shares": 15
+  },
+  {
+   "date": "2026-10-12",
+   "ig_followers": 180,
+   "tt_followers": 285,
+   "reach": 1432,
+   "saves": 25,
+   "shares": 22
+  },
+  {
+   "date": "2026-10-13",
+   "ig_followers": 189,
+   "tt_followers": 306,
+   "reach": 2109,
+   "saves": 25,
+   "shares": 21
+  },
+  {
+   "date": "2026-10-14",
+   "ig_followers": 201,
+   "tt_followers": 329,
+   "reach": 1813,
+   "saves": 51,
+   "shares": 14
+  },
+  {
+   "date": "2026-10-15",
+   "ig_followers": 214,
+   "tt_followers": 348,
+   "reach": 2469,
+   "saves": 44,
+   "shares": 16
+  },
+  {
+   "date": "2026-10-16",
+   "ig_followers": 227,
+   "tt_followers": 374,
+   "reach": 1945,
+   "saves": 48,
+   "shares": 31
+  },
+  {
+   "date": "2026-10-17",
+   "ig_followers": 236,
+   "tt_followers": 399,
+   "reach": 1771,
+   "saves": 57,
+   "shares": 18
+  },
+  {
+   "date": "2026-10-18",
+   "ig_followers": 251,
+   "tt_followers": 425,
+   "reach": 2334,
+   "saves": 35,
+   "shares": 28
+  },
+  {
+   "date": "2026-10-19",
+   "ig_followers": 264,
+   "tt_followers": 453,
+   "reach": 2225,
+   "saves": 37,
+   "shares": 15
+  },
+  {
+   "date": "2026-10-20",
+   "ig_followers": 274,
+   "tt_followers": 470,
+   "reach": 2205,
+   "saves": 40,
+   "shares": 16
+  },
+  {
+   "date": "2026-10-21",
+   "ig_followers": 293,
+   "tt_followers": 501,
+   "reach": 3113,
+   "saves": 47,
+   "shares": 25
+  },
+  {
+   "date": "2026-10-22",
+   "ig_followers": 304,
+   "tt_followers": 521,
+   "reach": 3063,
+   "saves": 51,
+   "shares": 29
+  },
+  {
+   "date": "2026-10-23",
+   "ig_followers": 325,
+   "tt_followers": 544,
+   "reach": 3018,
+   "saves": 46,
+   "shares": 23
+  }
+ ]
+}

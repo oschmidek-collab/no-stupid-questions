@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מחברת המעבדה · אין שאלות טיפשיות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;800;900&family=Assistant:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F1E8; --ink:#1A1A1A; --ink-2:#5A564E; --rule:#D9D2C2; --grid:rgba(31,78,140,.07);
+  --orange:#FF5A1F; --orange-ink:#C2400F; --blue:#1F4E8C; --done:#2F6B3A; --card:#FBF9F3;
+  --head:"Heebo",system-ui,sans-serif; --body:"Assistant",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 64px}
+
+/* header */
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;
+  border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:28px}
+.brand h1{font:900 clamp(28px,6vw,44px)/1 var(--head);margin:0;letter-spacing:-.01em}
+.brand p{margin:6px 0 0;color:var(--ink-2);font-size:15px}
+.day{text-align:left;font-size:15px;color:var(--ink-2)}
+.day strong{display:block;font:800 30px/1 var(--head);color:var(--ink)}
+.day strong span{color:var(--orange)}
+.demo{display:inline-block;margin-top:6px;background:var(--ink);color:var(--paper);font:600 13px var(--body);padding:2px 8px}
+
+/* layout */
+.grid{display:grid;gap:36px}
+@media (min-width:900px){.grid{grid-template-columns:1.25fr 1fr;align-items:start}}
+section h2{font:800 22px/1.2 var(--head);margin:0 0 4px}
+section .sub{margin:0 0 16px;color:var(--ink-2);font-size:15px}
+section+section{margin-top:36px}
+
+/* tasks */
+.progress{display:flex;align-items:center;gap:12px;margin:0 0 14px;font-family:var(--mono);font-size:14px;direction:ltr}
+.bar{flex:1;height:8px;background:var(--rule)}
+.bar i{display:block;height:100%;background:var(--orange);width:0;transition:width .4s ease}
+.tasks{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.task{position:relative;display:grid;grid-template-columns:44px 1fr;gap:4px 12px;padding:16px 4px;border-bottom:1px solid var(--rule)}
+.task>*:not(.check):not(.stamp){grid-column:2}
+.check{grid-row:1 / span 6;width:40px;height:40px;border:2px solid var(--ink);background:var(--card);cursor:pointer;
+  display:grid;place-items:center;font-size:22px;color:var(--done);padding:0}
+.check[aria-pressed="true"]::after{content:"✓";font-weight:700}
+.kind{font:700 14px var(--body);color:var(--orange-ink)}
+.task p{margin:0}
+.instr{font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.btn{font:600 15px var(--body);border:1.5px solid var(--ink);background:transparent;color:var(--ink);padding:6px 14px;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:40px}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.quote{margin-top:8px;padding:8px 12px;border-right:3px solid var(--blue);background:var(--card);font-size:16px}
+.task.done .instr,.task.done .quote{color:var(--ink-2);text-decoration:line-through;text-decoration-color:var(--rule)}
+.stamp{position:absolute;left:8px;top:18px;font:900 20px/1 var(--head);color:var(--orange);border:3px solid var(--orange);
+  padding:4px 10px;transform:rotate(-12deg);opacity:.85;pointer-events:none;mix-blend-mode:multiply}
+.task:not(.done) .stamp{display:none}
+.task.just .stamp{animation:stamp .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes stamp{from{transform:rotate(-12deg) scale(2.2);opacity:0}}
+.group-label{font:800 15px var(--head);margin:22px 0 0;color:var(--ink-2)}
+.empty{padding:20px 0;color:var(--ink-2)}
+
+/* metrics */
+.stats{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink);background:var(--card)}
+.stat{padding:12px 14px}
+.stat+.stat{border-right:1px solid var(--rule)}
+.stat b{display:block;font:800 30px/1.1 var(--head)}
+.stat small{font:400 14px var(--body);font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.stat .goal{display:block;margin-top:6px;height:4px;background:var(--rule)}
+.stat .goal i{display:block;height:100%}
+figure{margin:14px 0 0}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+figcaption{font:400 14px var(--body);color:var(--ink-2);margin-top:6px}
+
+/* tables-ish lists */
+.rows{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.rows li{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:baseline;padding:10px 2px;border-bottom:1px solid var(--rule)}
+.rows .date{font:400 13px var(--mono);color:var(--ink-2)}
+.rows .ser{display:block;font-size:13px;color:var(--blue);font-weight:600}
+.pill{font:600 13px var(--body);padding:2px 8px;border:1px solid currentColor;white-space:nowrap}
+.st-ready,.st-scheduled{color:var(--blue)} .st-posted{color:var(--done)} .st-idea{color:var(--ink-2)} .st-failed{color:var(--orange-ink)}
+.st-new{color:var(--orange-ink)} .st-planned{color:var(--blue)} .st-answered{color:var(--done)}
+.plat{font:400 13px var(--body);color:var(--ink-2);margin-inline-start:6px}
+.log{list-style:none;margin:0;padding:0}
+.log li{padding:10px 0;border-bottom:1px dashed var(--rule)}
+.log .wk{font:600 14px var(--body);color:var(--ink-2)}
+.log p{margin:2px 0 0}
+.log .why{color:var(--ink-2);font-size:15px}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);
+  padding:10px 16px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>מחברת המעבדה</h1>
+      <p>אין שאלות טיפשיות על אופניים. מה הסוכן עשה, ומה מחכה לך.</p>
+    </div>
+    <div class="day" id="day"></div>
+  </header>
+
+  <div class="grid">
+    <div>
+      <section aria-labelledby="t-h">
+        <h2 id="t-h">המשימות שלך היום</h2>
+        <p class="sub">מה שהסוכן לא יכול לעשות לבד. בערך 10 דקות.</p>
+        <div class="progress"><span id="prog-txt"></span><div class="bar"><i id="prog"></i></div></div>
+        <div id="tasks"></div>
+      </section>
+
+      <section aria-labelledby="q-h">
+        <h2 id="q-h">שאלות מהעוקבים</h2>
+        <p class="sub">חומר הגלם של העמוד. הסוכן בוחר מכאן.</p>
+        <ul class="rows" id="questions"></ul>
+      </section>
+    </div>
+
+    <div>
+      <section aria-labelledby="m-h">
+        <h2 id="m-h">צמיחה</h2>
+        <p class="sub" id="m-sub"></p>
+        <div class="stats" id="stats"></div>
+        <figure>
+          <svg class="chart" id="chart" direction="ltr" viewBox="0 0 400 180" role="img" aria-label="עוקבים לאורך זמן"></svg>
+          <figcaption id="chart-cap"></figcaption>
+        </figure>
+      </section>
+
+      <section aria-labelledby="c-h">
+        <h2 id="c-h">בתור לפרסום</h2>
+        <p class="sub">מה שהסוכן הכין לימים הקרובים.</p>
+        <ul class="rows" id="queue"></ul>
+      </section>
+
+      <section aria-labelledby="d-h">
+        <h2 id="d-h">יומן החלטות</h2>
+        <p class="sub">משתנה אחד בשבוע, ולמה.</p>
+        <ul class="log" id="decisions"></ul>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const START = '2026-10-26'; // יום 1 של הניסוי
+const KIND = {like:'❤️ לייק',comment:'💬 תגובה',follow:'➕ מעקב',publish:'📤 פרסום',create:'🛠️ הקמה',review:'👀 לבדוק'};
+const QSTAT = {new:'חדשה',planned:'בתכנון',answered:'נענתה'};
+const CSTAT = {idea:'רעיון',ready:'מוכן',scheduled:'מתוזמן',posted:'פורסם',failed:'נכשל'};
+const LEVEL = {beginner:'מתחיל',regular:'רוכב קבוע',pro:'מקצוען'};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = d => { const [y,m,dd] = d.split('-'); return `${+dd}.${+m}`; };
+let D = {};
+
+async function load(name){
+  try { const r = await fetch(`data/${name}.json`, {cache:'no-store'}); if (r.ok) return await r.json(); } catch(e){}
+  return (window.__DATA || {})[name];
+}
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
+function localDone(){ try { return JSON.parse(localStorage.getItem('nsq-done')||'{}'); } catch(e){ return {}; } }
+function saveLocal(map){ try { localStorage.setItem('nsq-done', JSON.stringify(map)); } catch(e){} }
+
+function renderDay(){
+  const today = new Date();
+  const n = Math.floor((today - new Date(START)) / 864e5) + 1;
+  const dateTxt = today.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'});
+  $('#day').innerHTML = n >= 1
+    ? `<strong>יום <span>${Math.min(n,90)}</span> מתוך 90</strong>${esc(dateTxt)}`
+    : `<strong>עוד <span>${1-n}</span> ימים להשקה</strong>${esc(dateTxt)}`;
+  if (D.metrics?.demo) $('#day').insertAdjacentHTML('beforeend','<div class="demo">נתוני דוגמה</div>');
+}
+
+function renderTasks(){
+  const local = localDone();
+  const tasks = (D.tasks||[]).map(t => ({...t, done: local[t.id] ?? t.done}));
+  const done = tasks.filter(t=>t.done).length;
+  $('#prog-txt').textContent = `${done}/${tasks.length}`;
+  $('#prog').style.width = tasks.length ? (done/tasks.length*100)+'%' : '0';
+  if (!tasks.length){ $('#tasks').innerHTML = '<p class="empty">אין משימות היום. הסוכן מסתדר לבד.</p>'; return; }
+  const setup = tasks.filter(t=>t.type==='create'), daily = tasks.filter(t=>t.type!=='create');
+  const block = (label, list) => !list.length ? '' : `<p class="group-label">${label}</p><ul class="tasks">${list.map(t=>`
+    <li class="task ${t.done?'done':''}" data-id="${esc(t.id)}">
+      <button class="check" aria-pressed="${t.done}" aria-label="סימון כבוצע: ${esc(t.instruction)}"></button>
+      <span class="kind">${KIND[t.type]||t.type}</span>
+      <p class="instr">${esc(t.instruction)}</p>
+      ${t.text?`<div class="quote">${esc(t.text)}</div>`:''}
+      ${(t.url||t.text)?`<div class="actions">
+        ${t.url?`<a class="btn primary" href="${esc(t.url)}" target="_blank" rel="noopener">פתיחה</a>`:''}
+        ${t.text?`<button class="btn" data-copy="${esc(t.text)}">העתקת התגובה</button>`:''}
+      </div>`:''}
+      <span class="stamp" aria-hidden="true">בוצע</span>
+    </li>`).join('')}</ul>`;
+  $('#tasks').innerHTML = block('הקמה חד־פעמית', setup) + block('אינטראקציות', daily);
+}
+
+async function toggle(id, li){
+  const local = localDone();
+  const t = D.tasks.find(x=>x.id===id); const now = !(local[id] ?? t.done);
+  local[id] = now; saveLocal(local);
+  renderTasks();
+  if (now){ const el = document.querySelector(`.task[data-id="${CSS.escape(id)}"]`); el?.classList.add('just'); }
+  try {
+    const r = await fetch('api/tasks', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, done:now})});
+    if (!r.ok) throw 0;
+  } catch(e){ toast(now ? 'סומן בוצע. נשמר במכשיר הזה בלבד עד שהשרת יחובר.' : 'הסימון בוטל.'); }
+}
+
+function renderStats(){
+  const m = D.metrics; const d = m?.daily||[];
+  if (!d.length){ $('#stats').innerHTML='<p class="empty" style="padding:14px">עוד אין נתונים. הם יופיעו אחרי הפרסום הראשון.</p>'; return; }
+  const last = d.at(-1), wk = d.at(-8) || d[0];
+  $('#m-sub').textContent = `עד ${fmtDate(last.date)}. היעד ל־90 יום מסומן בפס.`;
+  const stat = (label, key, goal, color) => {
+    const v = last[key], delta = v - wk[key];
+    return `<div class="stat"><small>${label}</small><b>${v.toLocaleString('he-IL')}</b>
+      <small>+${delta} השבוע · יעד ${goal.toLocaleString('he-IL')}</small>
+      <span class="goal"><i style="width:${Math.min(100,v/goal*100)}%;background:${color}"></i></span></div>`;
+  };
+  $('#stats').innerHTML = stat('אינסטגרם','ig_followers',m.goals.ig_followers,'var(--orange)') + stat('טיקטוק','tt_followers',m.goals.tt_followers,'var(--blue)');
+  // chart
+  const W=400,H=180,P={l:34,r:72,t:10,b:22};
+  const max = Math.max(...d.map(x=>Math.max(x.ig_followers,x.tt_followers)))*1.1;
+  const X = i => P.l + (i/(d.length-1))*(W-P.l-P.r);
+  const Y = v => H-P.b - v/max*(H-P.t-P.b);
+  const line = k => d.map((x,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(x[k]).toFixed(1)}`).join('');
+  const ticks = [0, Math.round(max/2/50)*50].map(v=>`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/>
+    <text x="${P.l-6}" y="${Y(v)+4}" text-anchor="end" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-2)">${v}</text>`).join('');
+  const endLbl = (k,c,txt) => `<circle cx="${X(d.length-1)}" cy="${Y(last[k])}" r="3.5" fill="${c}"/>
+    <text x="${X(d.length-1)+7}" y="${Y(last[k])+4}" text-anchor="start" font-family="Assistant" font-weight="700" font-size="13" fill="${c}">${txt}</text>`;
+  $('#chart').innerHTML = ticks +
+    `<path d="${line('tt_followers')}" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linejoin="round"/>
+     <path d="${line('ig_followers')}" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linejoin="round"/>` +
+    endLbl('tt_followers','var(--blue)','טיקטוק') + endLbl('ig_followers','var(--orange-ink)','אינסטגרם') +
+    `<text x="${P.l}" y="${H-4}" text-anchor="start" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-2)">${fmtDate(d[0].date)}</text>
+     <text x="${W-P.r}" y="${H-4}" text-anchor="end" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-2)">${fmtDate(last.date)}</text>`;
+  const saves = d.slice(-7).reduce((s,x)=>s+x.saves+x.shares,0);
+  $('#chart-cap').textContent = `עוקבים, ${d.length} ימים אחרונים. שמירות ושיתופים השבוע: ${saves}`;
+}
+
+function renderLists(){
+  const q = (D.questions||[]).slice().sort((a,b)=>b.received.localeCompare(a.received));
+  $('#questions').innerHTML = q.length ? q.map(x=>`<li><span class="date">${fmtDate(x.received)}</span>
+    <span>${esc(x.text)}<span class="ser" style="color:var(--ink-2);font-weight:400">${LEVEL[x.level]||''}</span></span>
+    <span class="pill st-${x.status}">${QSTAT[x.status]||x.status}</span></li>`).join('')
+    : '<li class="empty">עוד לא הגיעו שאלות. הן יגיעו כשיהיה קהל.</li>';
+  const c = (D.queue||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  $('#queue').innerHTML = c.length ? c.map(x=>`<li><span class="date">${fmtDate(x.date)}</span>
+    <span><span class="ser">${esc(x.series)}<span class="plat">${x.platform==='tt'?'טיקטוק':'אינסטגרם'}</span></span>${esc(x.title)}</span>
+    <span class="pill st-${x.status}">${CSTAT[x.status]||x.status}</span></li>`).join('')
+    : '<li class="empty">התור ריק. התוכנית השבועית תמלא אותו.</li>';
+  const dec = (D.decisions||[]).slice().reverse();
+  $('#decisions').innerHTML = dec.map(x=>`<li><span class="wk">שבוע ${esc(x.week.split('-W')[1]||x.week)}</span>
+    <p>${esc(x.change)}</p><p class="why">למה: ${esc(x.reason)}${x.result?` · תוצאה: ${esc(x.result)}`:''}</p></li>`).join('')
+    || '<li class="empty">עוד אין החלטות.</li>';
+}
+
+document.addEventListener('click', e => {
+  const chk = e.target.closest('.check'); if (chk){ toggle(chk.closest('.task').dataset.id); return; }
+  const cp = e.target.closest('[data-copy]');
+  if (cp){ navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast('התגובה הועתקה'),()=>toast('לא הצלחתי להעתיק. אפשר לסמן ולהעתיק ידנית.')); }
+});
+
+(async () => {
+  for (const n of ['tasks','queue','questions','metrics','decisions']) D[n] = await load(n);
+  renderDay(); renderTasks(); renderStats(); renderLists();
+})();
+</script>
+</body>
+</html>
